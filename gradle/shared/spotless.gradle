@@ -1,0 +1,46 @@
+apply plugin: 'com.diffplug.spotless'
+
+// Get the shared directory - from any submodule, go up to workspace root
+def sharedDir = new File(project.projectDir.parentFile, 'gradle/shared')
+
+// Spotless autoformatter
+// See https://github.com/diffplug/spotless/tree/main/plugin-gradle
+// Can be locally toggled via spotless:off/spotless:on comments
+spotless {
+    encoding 'UTF-8'
+
+    format 'misc', {
+        target '.gitignore'
+
+        trimTrailingWhitespace()
+        indentWithSpaces(4)
+        endWithNewline()
+    }
+    java {
+        target 'src/*/java/**/*.java', 'src/*/scala/**/*.java'
+
+        toggleOffOn()
+        importOrderFile(new File(sharedDir, 'spotless.importorder'))
+        removeUnusedImports()
+        eclipse('4.19').configFile(new File(sharedDir, 'spotless.eclipseformat.xml'))
+    }
+    json {
+        // ratchetFrom 'origin/master' // only format files which have changed since origin/master
+
+        target(
+            'src/**/mcmod.info',
+            'src/**/*.json',
+            'src/**/*.mcmeta'
+        )
+
+        prettier().config([
+            parser: 'json',
+            printWidth: 100,
+            tabWidth: 2,
+            objectWrap: "collapse",
+            useTabs: false,
+            endOfLine: 'lf'
+        ])
+        endWithNewline()
+    }
+}
