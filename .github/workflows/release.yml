@@ -10,33 +10,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up JDK
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           java-version: "8"
           distribution: "temurin"
 
-      - name: Make gradlew executable
-        run: chmod +x gradlew
-
-      - name: Build with Gradle
-        run: ./gradlew :gtnh-1.7.10:build
-
-      - name: Find JAR file
-        id: jar
+      - name: Build
         run: |
-          JAR_PATH=$(find gtnh-1.7.10/build/libs -name "*.jar" -type f | head -1)
-          echo "jar_path=$JAR_PATH" >> $GITHUB_OUTPUT
-          echo "jar_name=$(basename $JAR_PATH)" >> $GITHUB_OUTPUT
+          chmod +x gradlew
+          ./gradlew build
 
-      - name: Create Release
+      - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ steps.jar.outputs.jar_path }}
-          draft: false
-          prerelease: false
+          files: "**/build/libs/greg-link-*-[0-9]*.jar"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
