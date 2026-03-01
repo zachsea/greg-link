@@ -27,6 +27,9 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          files: "**/build/libs/greg-link-*-[0-9]*.jar"
+          files: |
+            **/build/libs/greg-link-gtnh-*.jar
+            !**/build/libs/greg-link-gtnh-*-sources.jar
+            !**/build/libs/greg-link-gtnh-*-dev.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

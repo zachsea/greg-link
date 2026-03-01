@@ -28,3 +28,28 @@ publishing {
     }
 }
 
+configurations.named("runtimeElements") {
+    attributes {
+        attribute(
+            Attribute.of("com.gtnewhorizons.retrofuturagradle.obfuscation", String::class.java),
+            "mcp"
+        )
+        attribute(
+            Attribute.of("rfgDeobfuscatorTransformed", Boolean::class.javaObjectType),
+            true
+        )
+    }
+}
+
+configurations.named("apiElements") {
+    attributes {
+        attribute(
+            Attribute.of("com.gtnewhorizons.retrofuturagradle.obfuscation", String::class.java),
+            "mcp"
+        )
+        attribute(
+            Attribute.of("rfgDeobfuscatorTransformed", Boolean::class.javaObjectType),
+            true
+        )
+    }
+}
