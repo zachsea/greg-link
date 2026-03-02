@@ -1,19 +1,24 @@
-package cafe.zach.greglink;
+package cafe.zach.greglink.proxy;
 
+import static cafe.zach.greglink.GregLink.LOG;
+
+import cafe.zach.discord.DiscordBridge;
+import cafe.zach.discord.api.config.DiscordServiceConfig;
+import cafe.zach.discord.api.exceptions.InvalidDiscordConfigurationException;
+import cafe.zach.greglink.Tags;
+import cafe.zach.greglink.config.ConfigHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
-public class CommonProxy {
+public class ServerProxy implements IProxy {
 
     // preInit "Run before anything else. Read your config, create blocks, items, etc, and register them with the
     // GameRegistry." (Remove if not needed)
     public void preInit(FMLPreInitializationEvent event) {
-        Config.synchronizeConfiguration(event.getSuggestedConfigurationFile());
-
-        GregLink.LOG.info(Config.greeting);
-        GregLink.LOG.info("I am Greg Link at version " + Tags.VERSION);
+        ConfigHandler.load();
+        LOG.info("Greg Link at version " + Tags.VERSION);
     }
 
     // load "Do your mod setup. Build whatever data structures you care about. Register recipes." (Remove if not needed)
@@ -23,5 +28,11 @@ public class CommonProxy {
     public void postInit(FMLPostInitializationEvent event) {}
 
     // register server commands in this event handler (Remove if not needed)
-    public void serverStarting(FMLServerStartingEvent event) {}
+    public void serverStarting(FMLServerStartingEvent event) {
+        try {
+            DiscordBridge.createConnection(new DiscordServiceConfig(ConfigHandler.discordToken));
+        } catch (InvalidDiscordConfigurationException | InterruptedException e) {
+            LOG.fatal("Could not connect to the Discord server!", e);
+        }
+    }
 }
