@@ -2,6 +2,7 @@ package cafe.zach.discord;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
@@ -42,5 +43,12 @@ class DiscordService {
             api.shutdown();
             api = null;
         }
+    }
+
+    public void sendMessage(String channelId, String message) {
+        TextChannel channel = api.getTextChannelById(channelId);
+        if (channel == null) return;
+        channel.sendMessage(message)
+            .queue();
     }
 }
