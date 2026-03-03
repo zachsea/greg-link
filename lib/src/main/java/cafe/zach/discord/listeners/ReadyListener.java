@@ -9,6 +9,6 @@ public class ReadyListener extends ListenerAdapter {
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        System.out.println("Discord Ready, normally lib should not print anything");
+
     }
 }
