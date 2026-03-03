@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-    implementation("cafe.zach:greg-link-lib:0.0.1")
+    implementation("cafe.zach:greg-link-lib:0.0.2")
 }
 
 val modVersion = System.getenv("GITHUB_REF_NAME")?.removePrefix("v") ?: "dev"

@@ -8,7 +8,6 @@ eclipse/
 .classpath
 .project
 bin/
-config/
 crash-reports/
 logs/
 options.txt

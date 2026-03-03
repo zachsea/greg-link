@@ -2,11 +2,18 @@ package cafe.zach.greglink.proxy;
 
 import static cafe.zach.greglink.GregLink.LOG;
 
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ChatComponentText;
+import net.minecraftforge.common.MinecraftForge;
+
 import cafe.zach.discord.DiscordBridge;
+import cafe.zach.discord.api.action.CommonActions;
+import cafe.zach.discord.api.action.registry.ActionRegistry;
 import cafe.zach.discord.api.config.DiscordServiceConfig;
 import cafe.zach.discord.api.exceptions.InvalidDiscordConfigurationException;
 import cafe.zach.greglink.Tags;
 import cafe.zach.greglink.config.ConfigHandler;
+import cafe.zach.greglink.events.ServerEventHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -18,6 +25,7 @@ public class ServerProxy implements IProxy {
     // GameRegistry." (Remove if not needed)
     public void preInit(FMLPreInitializationEvent event) {
         ConfigHandler.load();
+        MinecraftForge.EVENT_BUS.register(new ServerEventHandler());
         LOG.info("Greg Link at version " + Tags.VERSION);
     }
 
@@ -30,9 +38,26 @@ public class ServerProxy implements IProxy {
     // register server commands in this event handler (Remove if not needed)
     public void serverStarting(FMLServerStartingEvent event) {
         try {
-            DiscordBridge.createConnection(new DiscordServiceConfig(ConfigHandler.discordToken));
+            DiscordBridge.createConnection(
+                new DiscordServiceConfig(
+                    ConfigHandler.discordToken,
+                    ConfigHandler.serverName,
+                    ConfigHandler.sendChannel,
+                    ConfigHandler.listenChannels));
         } catch (InvalidDiscordConfigurationException | InterruptedException e) {
             LOG.fatal("Could not connect to the Discord server!", e);
         }
+        // register bidirectional actions
+        DiscordServiceConfig config = DiscordBridge.config;
+
+        // Default actions — channel filtering is handled inside these
+        ActionRegistry.register(
+            ActionRegistry.ON_DISCORD_MESSAGE,
+            CommonActions.broadcastToChat(
+                config,
+                msg -> MinecraftServer.getServer()
+                    .getConfigurationManager()
+                    .sendChatMsg(new ChatComponentText(msg))));
+        ActionRegistry.register(ActionRegistry.ON_MINECRAFT_CHAT, CommonActions.relayToDiscord(config));
     }
 }
