@@ -14,6 +14,7 @@ import cafe.zach.discord.api.exceptions.InvalidDiscordConfigurationException;
 import cafe.zach.greglink.Tags;
 import cafe.zach.greglink.config.GregLinkConfig;
 import cafe.zach.greglink.events.ServerEventHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -29,6 +30,9 @@ public class ServerProxy implements IProxy {
         config.load();
 
         MinecraftForge.EVENT_BUS.register(new ServerEventHandler());
+        FMLCommonHandler.instance()
+            .bus()
+            .register(new ServerEventHandler());
         LOG.info("Greg Link at version " + Tags.VERSION);
     }
 
@@ -53,6 +57,7 @@ public class ServerProxy implements IProxy {
             .sendChatMsg(new ChatComponentText(msg));
 
         ActionRegistry.register(ActionRegistry.ON_DISCORD_MESSAGE, CommonActions.broadcastToChat(sender));
-        ActionRegistry.register(ActionRegistry.ON_MINECRAFT_CHAT, CommonActions.relayToDiscord());
+        ActionRegistry.register(ActionRegistry.ON_MINECRAFT_CHAT, CommonActions.relayChatToDiscord());
+        ActionRegistry.register(ActionRegistry.ON_MINECRAFT_PLAYER_JOIN, CommonActions.relayJoinToDiscord());
     }
 }

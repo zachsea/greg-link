@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
 
 import cafe.zach.discord.api.action.IDiscordAction;
-import cafe.zach.discord.api.action.context.DiscordMessageContext;
+import cafe.zach.discord.api.action.context.DiscordContext;
 import cafe.zach.discord.api.action.registry.ActionRegistry;
 
 public class OnMessageReceived extends ListenerAdapter {
@@ -18,7 +18,7 @@ public class OnMessageReceived extends ListenerAdapter {
                 .isBot()
         ) return;
 
-        DiscordMessageContext context = new DiscordMessageContext(
+        DiscordContext context = DiscordContext.forMessage(
             event.getAuthor()
                 .getName(),
             event.getMessage()
