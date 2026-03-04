@@ -27,9 +27,15 @@ public class CommonActions {
         return filtered(context -> sender.send(String.format("[Discord] %s: %s", context.username, context.content)));
     }
 
-    public static IMinecraftAction relayToDiscord() {
+    public static IMinecraftAction relayChatToDiscord() {
         return context -> DiscordBridge.sendMessage(
             ConfigHandler.getInstance().sendChannel,
             String.format("**%s** (%s): %s", context.username, context.worldName, context.content));
+    }
+
+    public static IMinecraftAction relayJoinToDiscord() {
+        return context -> DiscordBridge.sendMessage(
+            ConfigHandler.getInstance().sendChannel,
+            String.format("**%s** joined and is %s", context.username, context.content));
     }
 }
