@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 
-import cafe.zach.discord.api.config.DiscordServiceConfig;
+import cafe.zach.discord.api.config.ConfigHandler;
 import cafe.zach.discord.api.exceptions.InvalidDiscordConfigurationException;
 import cafe.zach.discord.listeners.OnMessageReceived;
 import cafe.zach.discord.listeners.ReadyListener;
@@ -15,8 +15,7 @@ class DiscordService {
 
     private JDA api;
 
-    public DiscordService(DiscordServiceConfig config)
-        throws InterruptedException, InvalidDiscordConfigurationException {
+    public DiscordService(ConfigHandler config) throws InterruptedException, InvalidDiscordConfigurationException {
         try {
             initialize(config);
         } catch (InvalidTokenException | IllegalArgumentException e) {
@@ -24,11 +23,11 @@ class DiscordService {
         }
     }
 
-    public void initialize(DiscordServiceConfig config)
+    public void initialize(ConfigHandler config)
         throws InterruptedException, InvalidTokenException, IllegalArgumentException {
         api = JDABuilder
             .createLight(
-                config.token,
+                config.discordToken,
                 GatewayIntent.GUILD_MESSAGES,
                 GatewayIntent.MESSAGE_CONTENT,
                 GatewayIntent.GUILD_MEMBERS,

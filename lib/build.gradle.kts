@@ -33,6 +33,7 @@ dependencies {
         exclude(module="opus-java")
         exclude(module="tink")
     }
+    implementation("com.google.code.gson:gson:2.13.2")
 }
 
 configurations.named("runtimeElements") {
