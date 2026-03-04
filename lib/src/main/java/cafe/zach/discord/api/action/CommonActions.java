@@ -1,7 +1,7 @@
 package cafe.zach.discord.api.action;
 
 import cafe.zach.discord.DiscordBridge;
-import cafe.zach.discord.api.config.DiscordServiceConfig;
+import cafe.zach.discord.api.config.ConfigHandler;
 
 public class CommonActions {
 
@@ -15,29 +15,21 @@ public class CommonActions {
         void send(String channelId, String message);
     }
 
-    public static IDiscordAction filtered(DiscordServiceConfig config, IDiscordAction action) {
+    public static IDiscordAction filtered(IDiscordAction action) {
         return context -> {
-            if (config.listenChannels.contains(context.channelId)) {
+            if (ConfigHandler.getInstance().listenChannels.contains(context.channelId)) {
                 action.execute(context);
             }
         };
     }
 
-    public static IDiscordAction broadcastToChat(DiscordServiceConfig config, ChatSender sender) {
-        return filtered(
-            config,
-            context -> sender.send(String.format("[Discord] %s: %s", context.username, context.content)));
+    public static IDiscordAction broadcastToChat(ChatSender sender) {
+        return filtered(context -> sender.send(String.format("[Discord] %s: %s", context.username, context.content)));
     }
 
-    public static IDiscordAction broadcastToChat(DiscordServiceConfig config, ChatSender sender, String prefix) {
-        return filtered(
-            config,
-            context -> sender.send(String.format("[%s] %s: %s", prefix, context.username, context.content)));
-    }
-
-    public static IMinecraftAction relayToDiscord(DiscordServiceConfig config) {
+    public static IMinecraftAction relayToDiscord() {
         return context -> DiscordBridge.sendMessage(
-            config.sendChannel,
+            ConfigHandler.getInstance().sendChannel,
             String.format("**%s** (%s): %s", context.username, context.worldName, context.content));
     }
 }
