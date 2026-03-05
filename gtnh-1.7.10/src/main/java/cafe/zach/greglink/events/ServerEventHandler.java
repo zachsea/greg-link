@@ -10,6 +10,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
+// Pass context to the registered actions, may include other needed handlers
 @SideOnly(Side.SERVER)
 public class ServerEventHandler {
 
@@ -29,10 +30,18 @@ public class ServerEventHandler {
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        MinecraftContext context = MinecraftContext
-            .forPlayerJoin(event.player.getDisplayName(), event.player.isBurning() ? "burning" : "not burning");
+        MinecraftContext context = MinecraftContext.forPlayerJoin(event.player.getDisplayName());
 
         for (IMinecraftAction action : ActionRegistry.getMinecraftActions(ActionRegistry.ON_MINECRAFT_PLAYER_JOIN)) {
+            action.execute(context);
+        }
+    }
+
+    @SubscribeEvent
+    public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        MinecraftContext context = MinecraftContext.forPlayerLeave(event.player.getDisplayName());
+
+        for (IMinecraftAction action : ActionRegistry.getMinecraftActions(ActionRegistry.ON_MINECRAFT_PLAYER_LEAVE)) {
             action.execute(context);
         }
     }

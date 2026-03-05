@@ -22,9 +22,13 @@ public class MinecraftContext {
             .build();
     }
 
-    public static MinecraftContext forPlayerJoin(String username, String content) {
+    public static MinecraftContext forPlayerJoin(String username) {
         return new Builder().username(username)
-            .content(content)
+            .build();
+    }
+
+    public static MinecraftContext forPlayerLeave(String username) {
+        return new Builder().username(username)
             .build();
     }
 
