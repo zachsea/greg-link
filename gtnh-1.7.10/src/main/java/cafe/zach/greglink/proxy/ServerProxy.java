@@ -2,18 +2,16 @@ package cafe.zach.greglink.proxy;
 
 import static cafe.zach.greglink.GregLink.LOG;
 
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.MinecraftForge;
 
 import cafe.zach.discord.DiscordBridge;
-import cafe.zach.discord.api.action.CommonActions;
-import cafe.zach.discord.api.action.registry.ActionRegistry;
 import cafe.zach.discord.api.config.ConfigHandler;
 import cafe.zach.discord.api.exceptions.InvalidDiscordConfigurationException;
 import cafe.zach.greglink.Tags;
 import cafe.zach.greglink.config.GregLinkConfig;
 import cafe.zach.greglink.events.ServerEventHandler;
+import cafe.zach.greglink.registry.DiscordActionRegistry;
+import cafe.zach.greglink.registry.MinecraftActionRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -25,14 +23,17 @@ public class ServerProxy implements IProxy {
     // preInit "Run before anything else. Read your config, create blocks, items, etc, and register them with the
     // GameRegistry." (Remove if not needed)
     public void preInit(FMLPreInitializationEvent event) {
+        // Init config
         GregLinkConfig config = new GregLinkConfig();
         ConfigHandler.setInstance(config);
         config.load();
 
+        // Register different event bus handlers
         MinecraftForge.EVENT_BUS.register(new ServerEventHandler());
         FMLCommonHandler.instance()
             .bus()
             .register(new ServerEventHandler());
+
         LOG.info("Greg Link at version " + Tags.VERSION);
     }
 
@@ -52,12 +53,8 @@ public class ServerProxy implements IProxy {
             return;
         }
 
-        CommonActions.ChatSender sender = msg -> MinecraftServer.getServer()
-            .getConfigurationManager()
-            .sendChatMsg(new ChatComponentText(msg));
-
-        ActionRegistry.register(ActionRegistry.ON_DISCORD_MESSAGE, CommonActions.broadcastToChat(sender));
-        ActionRegistry.register(ActionRegistry.ON_MINECRAFT_CHAT, CommonActions.relayChatToDiscord());
-        ActionRegistry.register(ActionRegistry.ON_MINECRAFT_PLAYER_JOIN, CommonActions.relayJoinToDiscord());
+        // register actions for the event handler to pass contexts to
+        DiscordActionRegistry.register();
+        MinecraftActionRegistry.register();
     }
 }

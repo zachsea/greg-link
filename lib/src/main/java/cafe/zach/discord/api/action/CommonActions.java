@@ -2,9 +2,11 @@ package cafe.zach.discord.api.action;
 
 import cafe.zach.discord.DiscordBridge;
 import cafe.zach.discord.api.config.ConfigHandler;
+import jdk.nashorn.internal.runtime.regexp.joni.Config;
 
 public class CommonActions {
 
+    // provide method of sending a message for other common actions to use
     public interface ChatSender {
 
         void send(String message);
@@ -34,8 +36,11 @@ public class CommonActions {
     }
 
     public static IMinecraftAction relayJoinToDiscord() {
-        return context -> DiscordBridge.sendMessage(
-            ConfigHandler.getInstance().sendChannel,
-            String.format("**%s** joined and is %s", context.username, context.content));
+        return context -> DiscordBridge
+            .sendMessage(ConfigHandler.getInstance().sendChannel, String.format("**%s** joined", context.username));
+    }
+
+    public static IMinecraftAction relayLeaveToDiscord() {
+        return context -> DiscordBridge.sendMessage(ConfigHandler.getInstance().sendChannel,  String.format("**%s** left", context.username));
     }
 }
