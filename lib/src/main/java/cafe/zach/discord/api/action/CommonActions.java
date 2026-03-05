@@ -2,7 +2,6 @@ package cafe.zach.discord.api.action;
 
 import cafe.zach.discord.DiscordBridge;
 import cafe.zach.discord.api.config.ConfigHandler;
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
 
 public class CommonActions {
 
@@ -41,6 +40,7 @@ public class CommonActions {
     }
 
     public static IMinecraftAction relayLeaveToDiscord() {
-        return context -> DiscordBridge.sendMessage(ConfigHandler.getInstance().sendChannel,  String.format("**%s** left", context.username));
+        return context -> DiscordBridge
+            .sendMessage(ConfigHandler.getInstance().sendChannel, String.format("**%s** left", context.username));
     }
 }
