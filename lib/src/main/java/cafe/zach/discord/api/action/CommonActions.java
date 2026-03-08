@@ -5,6 +5,7 @@ import java.util.List;
 import cafe.zach.discord.DiscordBridge;
 import cafe.zach.discord.api.config.ChannelFilters;
 import cafe.zach.discord.api.config.ChannelMapping;
+import cafe.zach.discord.api.config.ChannelMinecraftConfig;
 import cafe.zach.discord.api.config.ConfigHandler;
 
 public class CommonActions {
@@ -25,7 +26,6 @@ public class CommonActions {
                 if (filters.ignoreBots && context.isBot) continue;
 
                 sender.send(String.format("[Discord] %s: %s", context.username, context.content));
-                break; // matched, no need to check further mappings for this message
             }
         };
     }
@@ -46,7 +46,7 @@ public class CommonActions {
     public static IMinecraftAction relayJoinToDiscord() {
         return context -> {
             List<ChannelMapping> mappings = ConfigHandler.getInstance()
-                .getChannelsForDimension(context.dimensionId);
+                .getChannelsForDimension(ChannelMinecraftConfig.WILDCARD);
 
             for (ChannelMapping mapping : mappings) {
                 DiscordBridge.sendMessage(mapping.discordChannelId, String.format("**%s** joined", context.username));
@@ -57,7 +57,7 @@ public class CommonActions {
     public static IMinecraftAction relayLeaveToDiscord() {
         return context -> {
             List<ChannelMapping> mappings = ConfigHandler.getInstance()
-                .getChannelsForDimension(context.dimensionId);
+                .getChannelsForDimension(ChannelMinecraftConfig.WILDCARD);
 
             for (ChannelMapping mapping : mappings) {
                 DiscordBridge.sendMessage(mapping.discordChannelId, String.format("**%s** left", context.username));

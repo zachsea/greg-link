@@ -16,6 +16,7 @@ public abstract class ConfigHandler {
     private static ConfigHandler INSTANCE;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting()
         .create();
+    private static final JsonParser PARSER = new JsonParser();
 
     // discord
     public String discordToken = "";
@@ -56,7 +57,7 @@ public abstract class ConfigHandler {
 
         try {
             Reader reader = new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8);
-            JsonElement element = JsonParser.parseReader(new JsonReader(reader));
+            JsonElement element = PARSER.parse(new JsonReader(reader));
             reader.close();
 
             if (!element.isJsonObject()) return;

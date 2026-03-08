@@ -20,7 +20,7 @@ public class ChannelMinecraftConfig {
     }
 
     public boolean matchesDimension(String dimension) {
-        return dimensions.contains(WILDCARD) || dimensions.contains(dimension);
+        return dimensions.contains(WILDCARD) || dimensions.contains(dimension) || dimension.equals(WILDCARD);
     }
 
     public static ChannelMinecraftConfig fromJson(JsonObject json) {
