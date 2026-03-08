@@ -2,11 +2,10 @@ package cafe.zach.greglink.proxy;
 
 import static cafe.zach.greglink.GregLink.LOG;
 
-import cafe.zach.discord.api.action.registry.ActionRegistry;
-import cpw.mods.fml.common.event.*;
 import net.minecraftforge.common.MinecraftForge;
 
 import cafe.zach.discord.DiscordBridge;
+import cafe.zach.discord.api.action.registry.ActionRegistry;
 import cafe.zach.discord.api.config.ConfigHandler;
 import cafe.zach.discord.api.exceptions.InvalidDiscordConfigurationException;
 import cafe.zach.greglink.Tags;
@@ -15,6 +14,7 @@ import cafe.zach.greglink.events.ServerEventHandler;
 import cafe.zach.greglink.registry.DiscordActionRegistry;
 import cafe.zach.greglink.registry.MinecraftActionRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.event.*;
 
 public class ServerProxy implements IProxy {
 
