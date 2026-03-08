@@ -13,6 +13,7 @@ public class DiscordActionRegistry {
             .getConfigurationManager()
             .sendChatMsg(new ChatComponentText(msg));
 
-        ActionRegistry.register(ActionRegistry.ON_DISCORD_MESSAGE, CommonActions.broadcastToChat(sender));
+        ActionRegistry.register(ActionRegistry.ON_DISCORD_MESSAGE, CommonActions.broadcastMessageToChat(sender));
+        ActionRegistry.register(ActionRegistry.ON_DISCORD_READY, CommonActions.broadcastReadyToChat(sender));
     }
 }

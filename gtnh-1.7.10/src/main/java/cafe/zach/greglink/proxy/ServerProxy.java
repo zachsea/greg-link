@@ -2,6 +2,8 @@ package cafe.zach.greglink.proxy;
 
 import static cafe.zach.greglink.GregLink.LOG;
 
+import cafe.zach.discord.api.action.registry.ActionRegistry;
+import cpw.mods.fml.common.event.*;
 import net.minecraftforge.common.MinecraftForge;
 
 import cafe.zach.discord.DiscordBridge;
@@ -13,10 +15,6 @@ import cafe.zach.greglink.events.ServerEventHandler;
 import cafe.zach.greglink.registry.DiscordActionRegistry;
 import cafe.zach.greglink.registry.MinecraftActionRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
 public class ServerProxy implements IProxy {
 
@@ -56,5 +54,10 @@ public class ServerProxy implements IProxy {
         // register actions for the event handler to pass contexts to
         DiscordActionRegistry.register();
         MinecraftActionRegistry.register();
+    }
+
+    public void onServerStopping(FMLServerStoppingEvent event) {
+        ActionRegistry.clear();
+        DiscordBridge.shutdown();
     }
 }

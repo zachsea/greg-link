@@ -15,7 +15,17 @@ public class CommonActions {
         void send(String message);
     }
 
-    public static IDiscordAction broadcastToChat(ChatSender sender) {
+    public static IDiscordAction broadcastReadyToChat(ChatSender sender) {
+        return context -> {
+            sender.send(
+                String.format(
+                    "[Discord] Ready on %s %s!",
+                    context.guildCount,
+                    context.guildCount == 1 ? "guild" : "guilds"));
+        };
+    }
+
+    public static IDiscordAction broadcastMessageToChat(ChatSender sender) {
         return context -> {
             ConfigHandler config = ConfigHandler.getInstance();
 
