@@ -1,46 +1,67 @@
 package cafe.zach.discord.api.action;
 
+import java.util.List;
+
 import cafe.zach.discord.DiscordBridge;
+import cafe.zach.discord.api.config.ChannelFilters;
+import cafe.zach.discord.api.config.ChannelMapping;
 import cafe.zach.discord.api.config.ConfigHandler;
 
 public class CommonActions {
 
-    // provide method of sending a message for other common actions to use
     public interface ChatSender {
 
         void send(String message);
     }
 
-    public interface DiscordSender {
-
-        void send(String channelId, String message);
-    }
-
-    public static IDiscordAction filtered(IDiscordAction action) {
+    public static IDiscordAction broadcastToChat(ChatSender sender) {
         return context -> {
-            if (ConfigHandler.getInstance().listenChannels.contains(context.channelId)) {
-                action.execute(context);
+            ConfigHandler config = ConfigHandler.getInstance();
+
+            for (ChannelMapping mapping : config.getListenChannels()) {
+                if (!mapping.discordChannelId.equals(context.channelId)) continue;
+
+                ChannelFilters filters = mapping.filters;
+                if (filters.ignoreBots && context.isBot) continue;
+
+                sender.send(String.format("[Discord] %s: %s", context.username, context.content));
+                break; // matched, no need to check further mappings for this message
             }
         };
     }
 
-    public static IDiscordAction broadcastToChat(ChatSender sender) {
-        return filtered(context -> sender.send(String.format("[Discord] %s: %s", context.username, context.content)));
-    }
-
     public static IMinecraftAction relayChatToDiscord() {
-        return context -> DiscordBridge.sendMessage(
-            ConfigHandler.getInstance().sendChannel,
-            String.format("**%s** (%s): %s", context.username, context.worldName, context.content));
+        return context -> {
+            List<ChannelMapping> mappings = ConfigHandler.getInstance()
+                .getChannelsForDimension(context.dimensionId);
+
+            for (ChannelMapping mapping : mappings) {
+                DiscordBridge.sendMessage(
+                    mapping.discordChannelId,
+                    String.format("**%s**: %s", context.username, context.content));
+            }
+        };
     }
 
     public static IMinecraftAction relayJoinToDiscord() {
-        return context -> DiscordBridge
-            .sendMessage(ConfigHandler.getInstance().sendChannel, String.format("**%s** joined", context.username));
+        return context -> {
+            List<ChannelMapping> mappings = ConfigHandler.getInstance()
+                .getChannelsForDimension(context.dimensionId);
+
+            for (ChannelMapping mapping : mappings) {
+                DiscordBridge.sendMessage(mapping.discordChannelId, String.format("**%s** joined", context.username));
+            }
+        };
     }
 
     public static IMinecraftAction relayLeaveToDiscord() {
-        return context -> DiscordBridge
-            .sendMessage(ConfigHandler.getInstance().sendChannel, String.format("**%s** left", context.username));
+        return context -> {
+            List<ChannelMapping> mappings = ConfigHandler.getInstance()
+                .getChannelsForDimension(context.dimensionId);
+
+            for (ChannelMapping mapping : mappings) {
+                DiscordBridge.sendMessage(mapping.discordChannelId, String.format("**%s** left", context.username));
+            }
+        };
     }
 }

@@ -6,19 +6,23 @@ public class DiscordContext {
     public final String content;
     public final String channelId;
     public final String guildId;
+    public final boolean isBot;
 
     private DiscordContext(Builder builder) {
         this.username = builder.username;
         this.content = builder.content;
         this.channelId = builder.channelId;
         this.guildId = builder.guildId;
+        this.isBot = builder.isBot;
     }
 
-    public static DiscordContext forMessage(String username, String content, String channelId, String guildId) {
+    public static DiscordContext forMessage(String username, String content, String channelId, String guildId,
+        boolean isBot) {
         return new Builder().username(username)
             .content(content)
             .channelId(channelId)
             .guildId(guildId)
+            .isBot(isBot)
             .build();
     }
 
@@ -28,6 +32,7 @@ public class DiscordContext {
         private String content;
         private String channelId;
         private String guildId;
+        private boolean isBot;
 
         private Builder username(String username) {
             this.username = username;
@@ -46,6 +51,11 @@ public class DiscordContext {
 
         private Builder guildId(String guildId) {
             this.guildId = guildId;
+            return this;
+        }
+
+        private Builder isBot(boolean isBot) {
+            this.isBot = isBot;
             return this;
         }
 

@@ -1,0 +1,56 @@
+package cafe.zach.discord.api.config;
+
+import com.google.gson.JsonObject;
+
+public class ChannelMapping {
+
+    public final String id;
+    public final String discordChannelId;
+    public final ChannelDirections directions;
+    public final ChannelMinecraftConfig minecraft;
+    public final ChannelFilters filters;
+
+    public ChannelMapping(String id, String discordChannelId, ChannelDirections directions,
+        ChannelMinecraftConfig minecraft, ChannelFilters filters) {
+        this.id = id;
+        this.discordChannelId = discordChannelId;
+        this.directions = directions;
+        this.minecraft = minecraft;
+        this.filters = filters;
+    }
+
+    public boolean acceptsFromDiscord() {
+        return directions.discordToMinecraft;
+    }
+
+    public boolean acceptsFromMinecraft() {
+        return directions.minecraftToDiscord;
+    }
+
+    public boolean matchesDimension(String dimension) {
+        return minecraft.matchesDimension(dimension);
+    }
+
+    public static ChannelMapping fromJson(JsonObject json) {
+        return new ChannelMapping(
+            json.has("id") ? json.get("id")
+                .getAsString() : "unnamed",
+            json.has("discordChannelId") ? json.get("discordChannelId")
+                .getAsString() : "",
+            json.has("directions") ? ChannelDirections.fromJson(json.getAsJsonObject("directions"))
+                : new ChannelDirections(true, true),
+            json.has("minecraft") ? ChannelMinecraftConfig.fromJson(json.getAsJsonObject("minecraft"))
+                : new ChannelMinecraftConfig(java.util.Collections.singletonList("*")),
+            json.has("filters") ? ChannelFilters.fromJson(json.getAsJsonObject("filters")) : new ChannelFilters(true));
+    }
+
+    public JsonObject toJson() {
+        JsonObject json = new JsonObject();
+        json.addProperty("id", id);
+        json.addProperty("discordChannelId", discordChannelId);
+        json.add("directions", directions.toJson());
+        json.add("minecraft", minecraft.toJson());
+        json.add("filters", filters.toJson());
+        return json;
+    }
+}

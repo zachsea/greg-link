@@ -4,7 +4,9 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
@@ -14,12 +16,22 @@ public abstract class ConfigHandler {
     private static ConfigHandler INSTANCE;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting()
         .create();
-    private static final JsonParser PARSER = new JsonParser();
 
+    // discord
     public String discordToken = "";
-    public String serverName = "Minecraft";
-    public String sendChannel = "";
-    public List<String> listenChannels = new ArrayList<>();
+
+    // server
+    // not yet used
+
+    // channels
+    public List<ChannelMapping> channels = new ArrayList<>(
+        Collections.singletonList(
+            new ChannelMapping(
+                "Example",
+                "0000000000000000",
+                new ChannelDirections(false, false),
+                new ChannelMinecraftConfig(Collections.singletonList("*")),
+                new ChannelFilters(true))));
 
     public static void setInstance(ConfigHandler instance) {
         INSTANCE = instance;
@@ -31,7 +43,6 @@ public abstract class ConfigHandler {
 
     protected abstract File getConfigFile();
 
-    // overridable for custom fields beyond base library ones
     protected void onLoad(JsonObject json) {}
 
     protected void onSave(JsonObject json) {}
@@ -45,27 +56,25 @@ public abstract class ConfigHandler {
 
         try {
             Reader reader = new InputStreamReader(Files.newInputStream(file.toPath()), StandardCharsets.UTF_8);
-            JsonElement element = PARSER.parse(new JsonReader(reader));
+            JsonElement element = JsonParser.parseReader(new JsonReader(reader));
             reader.close();
 
-            if (!element.isJsonObject()) {
-                return;
+            if (!element.isJsonObject()) return;
+            JsonObject root = element.getAsJsonObject();
+
+            if (root.has("bot")) {
+                JsonObject bot = root.getAsJsonObject("bot");
+                if (bot.has("token")) discordToken = bot.get("token")
+                    .getAsString();
             }
 
-            JsonObject json = element.getAsJsonObject();
-
-            if (json.has("discordToken")) discordToken = json.get("discordToken")
-                .getAsString();
-            if (json.has("serverName")) serverName = json.get("serverName")
-                .getAsString();
-            if (json.has("sendChannel")) sendChannel = json.get("sendChannel")
-                .getAsString();
-            if (json.has("listenChannels")) {
-                listenChannels = new ArrayList<>();
-                for (JsonElement ch : json.getAsJsonArray("listenChannels")) listenChannels.add(ch.getAsString());
+            if (root.has("channels")) {
+                channels = new ArrayList<>();
+                for (JsonElement el : root.getAsJsonArray("channels"))
+                    channels.add(ChannelMapping.fromJson(el.getAsJsonObject()));
             }
 
-            onLoad(json);
+            onLoad(root);
 
         } catch (Exception e) {
             // lib has no logger, let subclass handle if needed
@@ -75,26 +84,49 @@ public abstract class ConfigHandler {
     public final void save() {
         File file = getConfigFile();
         try {
-            file.getParentFile()
-                .mkdirs();
+            if (
+                !file.getParentFile()
+                    .mkdirs()
+            ) {
+                throw new IOException("Unable to create directory");
+            }
 
-            JsonObject json = new JsonObject();
-            json.addProperty("token", discordToken);
-            json.addProperty("serverName", serverName);
-            json.addProperty("sendChannel", sendChannel);
+            JsonObject root = new JsonObject();
 
-            JsonArray channels = new JsonArray();
-            for (String ch : listenChannels) channels.add(new JsonPrimitive(ch));
-            json.add("listenChannels", channels);
+            JsonObject bot = new JsonObject();
+            bot.addProperty("token", discordToken);
+            root.add("bot", bot);
 
-            onSave(json);
+            JsonArray channelArray = new JsonArray();
+            for (ChannelMapping mapping : channels) channelArray.add(mapping.toJson());
+            root.add("channels", channelArray);
 
-            Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
-            writer.write(GSON.toJson(json));
+            onSave(root);
+
+            Writer writer = new OutputStreamWriter(Files.newOutputStream(file.toPath()), StandardCharsets.UTF_8);
+            writer.write(GSON.toJson(root));
             writer.close();
 
         } catch (Exception e) {
             // let subclass handle if needed
         }
+    }
+
+    public List<ChannelMapping> getListenChannels() {
+        return channels.stream()
+            .filter(ChannelMapping::acceptsFromDiscord)
+            .collect(Collectors.toList());
+    }
+
+    public List<ChannelMapping> getRelayChannels() {
+        return channels.stream()
+            .filter(ChannelMapping::acceptsFromMinecraft)
+            .collect(Collectors.toList());
+    }
+
+    public List<ChannelMapping> getChannelsForDimension(String dimension) {
+        return getRelayChannels().stream()
+            .filter(m -> m.matchesDimension(dimension))
+            .collect(Collectors.toList());
     }
 }
