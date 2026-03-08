@@ -1,5 +1,9 @@
 package cafe.zach.discord;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
@@ -14,40 +18,83 @@ import cafe.zach.discord.listeners.ReadyListener;
 class DiscordService {
 
     private JDA api;
+    private ExecutorService eventPool;
+    private final AtomicBoolean running = new AtomicBoolean(false);
 
     public DiscordService(ConfigHandler config) throws InterruptedException, InvalidDiscordConfigurationException {
+        initialize(config);
+    }
+
+    public synchronized void initialize(ConfigHandler config)
+        throws InterruptedException, InvalidDiscordConfigurationException {
+
+        if (running.get()) {
+            throw new IllegalStateException("DiscordService is already running — call restart() instead");
+        }
+
         try {
-            initialize(config);
+            eventPool = Executors.newFixedThreadPool(2, r -> {
+                Thread t = new Thread(r, "GregLink-Discord");
+                t.setDaemon(true); // won't block MC shutdown
+                return t;
+            });
+
+            api = JDABuilder
+                .createLight(
+                    config.discordToken,
+                    GatewayIntent.GUILD_MESSAGES,
+                    GatewayIntent.MESSAGE_CONTENT,
+                    GatewayIntent.GUILD_MEMBERS,
+                    GatewayIntent.GUILD_MESSAGE_REACTIONS)
+                .setEventPool(eventPool)
+                .addEventListeners(new ReadyListener(), new OnMessageReceived())
+                .build()
+                .awaitReady();
+
+            running.set(true);
+
         } catch (InvalidTokenException | IllegalArgumentException e) {
+            destroyPool();
             throw new InvalidDiscordConfigurationException("provided token is invalid");
         }
     }
 
-    public void initialize(ConfigHandler config)
-        throws InterruptedException, InvalidTokenException, IllegalArgumentException {
-        api = JDABuilder
-            .createLight(
-                config.discordToken,
-                GatewayIntent.GUILD_MESSAGES,
-                GatewayIntent.MESSAGE_CONTENT,
-                GatewayIntent.GUILD_MEMBERS,
-                GatewayIntent.GUILD_MESSAGE_REACTIONS)
-            .addEventListeners(new ReadyListener(), new OnMessageReceived())
-            .build()
-            .awaitReady();
+    public synchronized void restart(ConfigHandler config)
+        throws InterruptedException, InvalidDiscordConfigurationException {
+        destroy();
+        initialize(config);
     }
 
-    public void destroy() {
+    public synchronized void destroy() {
+        running.set(false);
+
         if (api != null) {
             api.shutdown();
             api = null;
         }
+
+        destroyPool();
     }
 
     public void sendMessage(String channelId, String message) {
+        if (!running.get() || api == null) return;
+
         TextChannel channel = api.getTextChannelById(channelId);
         if (channel == null) return;
+
         channel.sendMessage(message)
-            .queue();
+            .queue(null, error -> {} // silently drop failed sends for now, hook for logging later
+            );
+    }
+
+    public boolean isRunning() {
+        return running.get();
+    }
+
+    private void destroyPool() {
+        if (eventPool != null) {
+            eventPool.shutdownNow();
+            eventPool = null;
+        }
     }
 }
