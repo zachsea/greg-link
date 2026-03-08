@@ -14,8 +14,8 @@ public class OnMessageReceived extends ListenerAdapter {
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
         if (
-            event.getAuthor()
-                .isBot()
+            event.getAuthor() == event.getJDA()
+                .getSelfUser()
         ) return;
 
         DiscordContext context = DiscordContext.forMessage(
@@ -26,7 +26,9 @@ public class OnMessageReceived extends ListenerAdapter {
             event.getChannel()
                 .getId(),
             event.getGuild()
-                .getId());
+                .getId(),
+            event.getAuthor()
+                .isBot());
 
         for (IDiscordAction action : ActionRegistry.getDiscordActions(ActionRegistry.ON_DISCORD_MESSAGE)) {
             action.execute(context);

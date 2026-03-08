@@ -21,7 +21,7 @@ public class ServerEventHandler {
             event.message,
             event.player.worldObj.getWorldInfo()
                 .getWorldName(),
-            "server");
+            String.valueOf(event.player.worldObj.provider.dimensionId));
 
         for (IMinecraftAction action : ActionRegistry.getMinecraftActions(ActionRegistry.ON_MINECRAFT_CHAT)) {
             action.execute(context);

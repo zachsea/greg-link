@@ -5,20 +5,20 @@ public class MinecraftContext {
     public final String username;
     public final String content;
     public final String worldName;
-    public final String serverName;
+    public final String dimensionId;
 
     private MinecraftContext(Builder builder) {
         this.username = builder.username;
         this.content = builder.content;
         this.worldName = builder.worldName;
-        this.serverName = builder.serverName;
+        this.dimensionId = builder.dimensionId;
     }
 
-    public static MinecraftContext forChat(String username, String content, String worldName, String serverName) {
+    public static MinecraftContext forChat(String username, String content, String worldName, String dimensionId) {
         return new Builder().username(username)
             .content(content)
             .worldName(worldName)
-            .serverName(serverName)
+            .dimensionId(dimensionId)
             .build();
     }
 
@@ -37,7 +37,7 @@ public class MinecraftContext {
         private String username;
         private String content;
         private String worldName;
-        private String serverName;
+        private String dimensionId;
 
         private Builder username(String username) {
             this.username = username;
@@ -54,8 +54,8 @@ public class MinecraftContext {
             return this;
         }
 
-        private Builder serverName(String serverName) {
-            this.serverName = serverName;
+        private Builder dimensionId(String dimensionId) {
+            this.dimensionId = dimensionId;
             return this;
         }
 

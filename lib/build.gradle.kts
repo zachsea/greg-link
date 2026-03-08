@@ -10,7 +10,6 @@ repositories {
 }
 
 group = "cafe.zach"
-version = "0.0.1"
 
 apply(from = "${rootProject.projectDir.parentFile}/gradle/shared/spotless.gradle")
 
@@ -33,7 +32,7 @@ dependencies {
         exclude(module="opus-java")
         exclude(module="tink")
     }
-    implementation("com.google.code.gson:gson:2.13.2")
+    implementation("com.google.code.gson:gson:2.8.0")
 }
 
 configurations.named("runtimeElements") {
