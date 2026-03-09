@@ -3,6 +3,7 @@ package cafe.zach.discord.api.action;
 import java.util.List;
 
 import cafe.zach.discord.DiscordBridge;
+import cafe.zach.discord.api.action.format.MessageFormatter;
 import cafe.zach.discord.api.config.ChannelFilters;
 import cafe.zach.discord.api.config.ChannelMapping;
 import cafe.zach.discord.api.config.ChannelMinecraftConfig;
@@ -16,26 +17,19 @@ public class CommonActions {
     }
 
     public static IDiscordAction broadcastReadyToChat(ChatSender sender) {
-        return context -> {
-            sender.send(
-                String.format(
-                    "[Discord] Ready on %s %s!",
-                    context.guildCount,
-                    context.guildCount == 1 ? "guild" : "guilds"));
-        };
+        return context -> sender.send(MessageFormatter.formatDiscordReady(context));
     }
 
     public static IDiscordAction broadcastMessageToChat(ChatSender sender) {
         return context -> {
-            ConfigHandler config = ConfigHandler.getInstance();
-
-            for (ChannelMapping mapping : config.getListenChannels()) {
+            for (ChannelMapping mapping : ConfigHandler.getInstance()
+                .getListenChannels()) {
                 if (!mapping.discordChannelId.equals(context.channelId)) continue;
 
                 ChannelFilters filters = mapping.filters;
                 if (filters.ignoreBots && context.isBot) continue;
 
-                sender.send(String.format("[Discord] %s: %s", context.username, context.content));
+                sender.send(MessageFormatter.formatDiscordMessage(context));
             }
         };
     }
@@ -46,9 +40,14 @@ public class CommonActions {
                 .getChannelsForDimension(context.dimensionId);
 
             for (ChannelMapping mapping : mappings) {
-                DiscordBridge.sendMessage(
-                    mapping.discordChannelId,
-                    String.format("**%s**: %s", context.username, context.content));
+                if (mapping.discord.chatsUseEmbeds) {
+                    DiscordBridge.sendEmbedWithAvatar(
+                        mapping.discordChannelId,
+                        MessageFormatter.embedChat(context),
+                        MessageFormatter.fetchAvatar(context));
+                } else {
+                    DiscordBridge.sendMessage(mapping.discordChannelId, MessageFormatter.formatChat(context));
+                }
             }
         };
     }
@@ -59,7 +58,14 @@ public class CommonActions {
                 .getChannelsForDimension(ChannelMinecraftConfig.WILDCARD);
 
             for (ChannelMapping mapping : mappings) {
-                DiscordBridge.sendMessage(mapping.discordChannelId, String.format("**%s** joined", context.username));
+                if (mapping.discord.eventsUseEmbeds) {
+                    DiscordBridge.sendEmbedWithAvatar(
+                        mapping.discordChannelId,
+                        MessageFormatter.embedJoin(context),
+                        MessageFormatter.fetchAvatar(context));
+                } else {
+                    DiscordBridge.sendMessage(mapping.discordChannelId, MessageFormatter.formatJoin(context));
+                }
             }
         };
     }
@@ -70,7 +76,14 @@ public class CommonActions {
                 .getChannelsForDimension(ChannelMinecraftConfig.WILDCARD);
 
             for (ChannelMapping mapping : mappings) {
-                DiscordBridge.sendMessage(mapping.discordChannelId, String.format("**%s** left", context.username));
+                if (mapping.discord.eventsUseEmbeds) {
+                    DiscordBridge.sendEmbedWithAvatar(
+                        mapping.discordChannelId,
+                        MessageFormatter.embedLeave(context),
+                        MessageFormatter.fetchAvatar(context));
+                } else {
+                    DiscordBridge.sendMessage(mapping.discordChannelId, MessageFormatter.formatLeave(context));
+                }
             }
         };
     }

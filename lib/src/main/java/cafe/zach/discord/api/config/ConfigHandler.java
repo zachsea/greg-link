@@ -31,6 +31,7 @@ public abstract class ConfigHandler {
                 "Example",
                 "0000000000000000",
                 new ChannelDirections(false, false),
+                new ChannelDiscordConfig(true, false),
                 new ChannelMinecraftConfig(Collections.singletonList("*")),
                 new ChannelFilters(true))));
 
@@ -85,10 +86,8 @@ public abstract class ConfigHandler {
     public final void save() {
         File file = getConfigFile();
         try {
-            if (
-                !file.getParentFile()
-                    .mkdirs()
-            ) {
+            File parent = file.getParentFile();
+            if (!parent.exists() && !parent.mkdirs()) {
                 throw new IOException("Unable to create directory");
             }
 
