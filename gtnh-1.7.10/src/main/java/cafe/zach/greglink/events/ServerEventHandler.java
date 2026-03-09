@@ -18,6 +18,8 @@ public class ServerEventHandler {
     public void onServerChat(ServerChatEvent event) {
         MinecraftContext context = MinecraftContext.forChat(
             event.player.getCommandSenderName(),
+            event.player.getUniqueID()
+                .toString(),
             event.message,
             event.player.worldObj.getWorldInfo()
                 .getWorldName(),
@@ -30,7 +32,10 @@ public class ServerEventHandler {
 
     @SubscribeEvent
     public void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        MinecraftContext context = MinecraftContext.forPlayerJoin(event.player.getDisplayName());
+        MinecraftContext context = MinecraftContext.forPlayerJoin(
+            event.player.getDisplayName(),
+            event.player.getUniqueID()
+                .toString());
 
         for (IMinecraftAction action : ActionRegistry.getMinecraftActions(ActionRegistry.ON_MINECRAFT_PLAYER_JOIN)) {
             action.execute(context);
@@ -39,7 +44,10 @@ public class ServerEventHandler {
 
     @SubscribeEvent
     public void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        MinecraftContext context = MinecraftContext.forPlayerLeave(event.player.getDisplayName());
+        MinecraftContext context = MinecraftContext.forPlayerLeave(
+            event.player.getDisplayName(),
+            event.player.getUniqueID()
+                .toString());
 
         for (IMinecraftAction action : ActionRegistry.getMinecraftActions(ActionRegistry.ON_MINECRAFT_PLAYER_LEAVE)) {
             action.execute(context);

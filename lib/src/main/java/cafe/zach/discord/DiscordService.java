@@ -6,9 +6,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.exceptions.InvalidTokenException;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.FileUpload;
 
 import cafe.zach.discord.api.config.ConfigHandler;
 import cafe.zach.discord.api.exceptions.InvalidDiscordConfigurationException;
@@ -83,8 +85,42 @@ class DiscordService {
         if (channel == null) return;
 
         channel.sendMessage(message)
-            .queue(null, error -> {} // silently drop failed sends for now, hook for logging later
-            );
+            .queue(null, error -> {}); // silently drop failed sends for now, hook for logging later
+    }
+
+    public void sendEmbed(String channelId, MessageEmbed embed) {
+        if (!running.get() || api == null) return;
+
+        TextChannel channel = api.getTextChannelById(channelId);
+        if (channel == null) return;
+
+        channel.sendMessageEmbeds(embed)
+            .queue(null, error -> {});
+    }
+
+    public void sendEmbedWithAvatar(String channelId, MessageEmbed embed, byte[] avatar) {
+        if (!running.get() || api == null) return;
+
+        TextChannel channel = api.getTextChannelById(channelId);
+        if (channel == null) return;
+
+        if (
+            avatar != null && embed.getAuthor() != null
+                && embed.getAuthor()
+                    .getIconUrl() != null
+        ) {
+            String filename = embed.getAuthor()
+                .getIconUrl()
+                .substring("attachment://".length());
+
+            channel.sendFiles(FileUpload.fromData(avatar, filename))
+                .setEmbeds(embed)
+                .queue(null, error -> {});
+        } else {
+            // fall back to embed without avatar if fetch failed
+            channel.sendMessageEmbeds(embed)
+                .queue(null, error -> {});
+        }
     }
 
     public boolean isRunning() {

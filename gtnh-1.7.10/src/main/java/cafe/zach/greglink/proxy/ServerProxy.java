@@ -25,6 +25,8 @@ public class ServerProxy implements IProxy {
         GregLinkConfig config = new GregLinkConfig();
         ConfigHandler.setInstance(config);
         config.load();
+        // pulse a save to update new defaults in the config
+        config.save();
 
         // Register different event bus handlers
         MinecraftForge.EVENT_BUS.register(new ServerEventHandler());
