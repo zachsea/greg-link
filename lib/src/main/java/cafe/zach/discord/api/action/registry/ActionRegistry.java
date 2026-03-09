@@ -4,6 +4,8 @@ import java.util.*;
 
 import cafe.zach.discord.api.action.IDiscordAction;
 import cafe.zach.discord.api.action.IMinecraftAction;
+import cafe.zach.discord.api.action.context.DiscordContext;
+import cafe.zach.discord.api.action.context.MinecraftContext;
 
 public class ActionRegistry {
 
@@ -38,6 +40,18 @@ public class ActionRegistry {
 
     public static List<IMinecraftAction> getMinecraftActions(String event) {
         return minecraftActions.getOrDefault(event, Collections.emptyList());
+    }
+
+    public static void fireMinecraft(String event, MinecraftContext context) {
+        for (IMinecraftAction action : getMinecraftActions(event)) {
+            action.execute(context);
+        }
+    }
+
+    public static void fireDiscord(String event, DiscordContext context) {
+        for (IDiscordAction action : getDiscordActions(event)) {
+            action.execute(context);
+        }
     }
 
     public static void clear() {
