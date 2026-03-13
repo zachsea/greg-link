@@ -47,6 +47,46 @@ public class MessageFormatter {
             .build();
     }
 
+    public static String formatServerStarting(MinecraftContext context) {
+        return "\uD83D\uDD04  Server starting...";
+    }
+
+    public static MessageEmbed embedServerStarting(MinecraftContext context) {
+        return new EmbedBuilder().setTitle(" \uD83D\uDD04  Server starting...")
+            .setColor(EmbedColors.GREY)
+            .build();
+    }
+
+    public static String formatServerStarted(MinecraftContext context) {
+        return "✅  Server started!";
+    }
+
+    public static MessageEmbed embedServerStarted(MinecraftContext context) {
+        return new EmbedBuilder().setTitle(" ✅  Server started!")
+            .setColor(EmbedColors.GREEN)
+            .build();
+    }
+
+    public static String formatServerStopping(MinecraftContext context) {
+        return "\uD83D\uDD04  Server stopping...";
+    }
+
+    public static MessageEmbed embedServerStopping(MinecraftContext context) {
+        return new EmbedBuilder().setTitle(" \uD83D\uDD04  Server stopping...")
+            .setColor(EmbedColors.GREY)
+            .build();
+    }
+
+    public static String formatServerStopped(MinecraftContext context) {
+        return "\uD83D\uDEAB  Server stopped";
+    }
+
+    public static MessageEmbed embedServerStopped(MinecraftContext context) {
+        return new EmbedBuilder().setTitle(" \uD83D\uDEAB  Server stopped")
+            .setColor(EmbedColors.RED)
+            .build();
+    }
+
     // Discord -> Minecraft
 
     public static String formatDiscordMessage(DiscordContext context) {

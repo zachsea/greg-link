@@ -1,11 +1,8 @@
 package cafe.zach.greglink.bridge;
 
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.ChatComponentText;
 import net.minecraftforge.common.MinecraftForge;
 
 import cafe.zach.discord.DiscordBridge;
-import cafe.zach.discord.api.action.ChatSender;
 import cafe.zach.discord.api.action.registry.ActionRegistry;
 import cafe.zach.discord.api.exceptions.InvalidDiscordConfigurationException;
 import cafe.zach.greglink.GregLink;
@@ -29,10 +26,6 @@ public class BridgeManager {
     }
 
     public static void registerActions() {
-        ChatSender sender = msg -> MinecraftServer.getServer()
-            .getConfigurationManager()
-            .sendChatMsg(new ChatComponentText(msg));
-
         MinecraftActionRegistry.register();
         DiscordActionRegistry.register();
     }

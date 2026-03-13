@@ -29,7 +29,7 @@ public class DiscordBridge {
 
     public static void shutdown() {
         if (service != null) {
-            service.destroy();
+            service.awaitDestroy();
             service = null;
         }
     }

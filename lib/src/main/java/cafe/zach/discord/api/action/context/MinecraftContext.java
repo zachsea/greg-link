@@ -38,6 +38,10 @@ public class MinecraftContext {
             .build();
     }
 
+    public static MinecraftContext forEmpty() {
+        return new Builder().build();
+    }
+
     private static class Builder {
 
         private String username;

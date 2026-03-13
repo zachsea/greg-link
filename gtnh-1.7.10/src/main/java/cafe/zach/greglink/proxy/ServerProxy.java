@@ -2,6 +2,8 @@ package cafe.zach.greglink.proxy;
 
 import static cafe.zach.greglink.GregLink.LOG;
 
+import cafe.zach.discord.api.action.context.MinecraftContext;
+import cafe.zach.discord.api.action.registry.ActionRegistry;
 import cafe.zach.discord.api.config.ConfigHandler;
 import cafe.zach.greglink.Tags;
 import cafe.zach.greglink.bridge.BridgeManager;
@@ -30,9 +32,19 @@ public class ServerProxy implements IProxy {
 
     public void serverStarting(FMLServerStartingEvent event) {
         BridgeManager.connect();
+        ActionRegistry.fireMinecraft(ActionRegistry.ON_MINECRAFT_SERVER_STARTING, MinecraftContext.forEmpty());
     }
 
-    public void onServerStopping(FMLServerStoppingEvent event) {
+    public void serverStarted(FMLServerStartedEvent event) {
+        ActionRegistry.fireMinecraft(ActionRegistry.ON_MINECRAFT_SERVER_STARTED, MinecraftContext.forEmpty());
+    }
+
+    public void serverStopping(FMLServerStoppingEvent event) {
+        ActionRegistry.fireMinecraft(ActionRegistry.ON_MINECRAFT_SERVER_STOPPING, MinecraftContext.forEmpty());
+    }
+
+    public void serverStopped(FMLServerStoppedEvent event) {
+        ActionRegistry.fireMinecraft(ActionRegistry.ON_MINECRAFT_SERVER_STOPPED, MinecraftContext.forEmpty());
         BridgeManager.disconnect();
     }
 }
