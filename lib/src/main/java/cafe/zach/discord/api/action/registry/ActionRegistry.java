@@ -16,12 +16,15 @@ public class ActionRegistry {
     public static final String ON_DISCORD_MEMBER_LEAVE = "on_discord_member_leave";
 
     public static final String ON_MINECRAFT_CHAT = "on_minecraft_chat";
+    public static final String ON_MINECRAFT_COMMAND = "on_minecraft_command";
     public static final String ON_MINECRAFT_PLAYER_JOIN = "on_minecraft_player_join";
     public static final String ON_MINECRAFT_PLAYER_LEAVE = "on_minecraft_player_leave";
     public static final String ON_MINECRAFT_SERVER_STARTING = "on_minecraft_server_starting";
     public static final String ON_MINECRAFT_SERVER_STARTED = "on_minecraft_server_started";
     public static final String ON_MINECRAFT_SERVER_STOPPING = "on_minecraft_server_stopping";
     public static final String ON_MINECRAFT_SERVER_STOPPED = "on_minecraft_server_stopped";
+    public static final String ON_MINECRAFT_ACHIEVEMENT = "on_minecraft_achievement";
+    public static final String ON_MINECRAFT_DEATH = "on_minecraft_death";
 
     private static final Map<String, List<IDiscordAction>> discordActions = new LinkedHashMap<>();
     private static final Map<String, List<IMinecraftAction>> minecraftActions = new LinkedHashMap<>();

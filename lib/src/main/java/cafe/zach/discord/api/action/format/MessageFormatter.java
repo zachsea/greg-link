@@ -25,6 +25,18 @@ public class MessageFormatter {
             .build();
     }
 
+    public static String formatChatCommand(MinecraftContext context) {
+        return String.format("**%s** ran: %s", context.username, context.content);
+    }
+
+    public static MessageEmbed embedChatCommand(MinecraftContext context) {
+        return new EmbedBuilder()
+            .setAuthor(String.format("%s ran a command", context.username), null, "attachment://author.png")
+            .setDescription(context.content)
+            .setColor(EmbedColors.COMMAND)
+            .build();
+    }
+
     public static String formatJoin(MinecraftContext context) {
         return String.format("**%s** joined", context.username);
     }
@@ -84,6 +96,30 @@ public class MessageFormatter {
     public static MessageEmbed embedServerStopped(MinecraftContext context) {
         return new EmbedBuilder().setTitle(" \uD83D\uDEAB  Server stopped")
             .setColor(EmbedColors.RED)
+            .build();
+    }
+
+    public static String formatPlayerDeath(MinecraftContext context) {
+        return String.format("☠️ %s", context.content);
+    }
+
+    public static MessageEmbed embedPlayerDeath(MinecraftContext context) {
+        return new EmbedBuilder().setAuthor(context.content, null, "attachment://author.png")
+            .setColor(EmbedColors.RED)
+            .build();
+    }
+
+    public static String formatAchievement(MinecraftContext context) {
+        return String.format("**%s** achieved **%s**", context.username, context.content);
+    }
+
+    public static MessageEmbed embedAchievement(MinecraftContext context) {
+        return new EmbedBuilder()
+            .setAuthor(
+                String.format("%s achieved %s", context.username, context.content),
+                null,
+                "attachment://author.png")
+            .setColor(EmbedColors.GOLD)
             .build();
     }
 

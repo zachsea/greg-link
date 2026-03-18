@@ -40,4 +40,5 @@ public class EmbedColors {
     public static final int CHAT = BLURPLE;
     public static final int JOIN = GREEN;
     public static final int LEAVE = RED;
+    public static final int COMMAND = WHITE;
 }

@@ -6,7 +6,7 @@ import cafe.zach.discord.api.action.context.MinecraftContext;
 import cafe.zach.discord.api.action.registry.ActionRegistry;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-public class ServerChatEventHandler {
+public class ServerChatHandler {
 
     @SubscribeEvent
     public void onServerChat(ServerChatEvent event) {
