@@ -6,10 +6,7 @@ import org.apache.logging.log4j.Logger;
 import cafe.zach.greglink.proxy.IProxy;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
+import cpw.mods.fml.common.event.*;
 
 @Mod(
     modid = GregLink.MODID,
@@ -46,5 +43,20 @@ public class GregLink {
     @Mod.EventHandler
     public void serverStarting(FMLServerStartingEvent event) {
         proxy.serverStarting(event);
+    }
+
+    @Mod.EventHandler
+    public void serverStarted(FMLServerStartedEvent event) {
+        proxy.serverStarted(event);
+    }
+
+    @Mod.EventHandler
+    public void serverStopping(FMLServerStoppingEvent event) {
+        proxy.serverStopping(event);
+    }
+
+    @Mod.EventHandler
+    public void serverStopped(FMLServerStoppedEvent event) {
+        proxy.serverStopped(event);
     }
 }

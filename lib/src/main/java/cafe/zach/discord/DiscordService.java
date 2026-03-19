@@ -1,5 +1,6 @@
 package cafe.zach.discord;
 
+import java.time.Duration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -73,6 +74,25 @@ class DiscordService {
         if (api != null) {
             api.shutdown();
             api = null;
+        }
+
+        destroyPool();
+    }
+
+    public synchronized void awaitDestroy() {
+        running.set(false);
+
+        if (api != null) {
+            api.shutdown();
+            try {
+                if (!api.awaitShutdown(Duration.ofSeconds(5))) {
+                    // if the queue is not empty after 5 seconds, force immediate shutdown
+                    api.shutdownNow();
+                    api.awaitShutdown();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
         destroyPool();

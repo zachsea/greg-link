@@ -25,6 +25,18 @@ public class MessageFormatter {
             .build();
     }
 
+    public static String formatChatCommand(MinecraftContext context) {
+        return String.format("**%s** ran: %s", context.username, context.content);
+    }
+
+    public static MessageEmbed embedChatCommand(MinecraftContext context) {
+        return new EmbedBuilder()
+            .setAuthor(String.format("%s ran a command", context.username), null, "attachment://author.png")
+            .setDescription(context.content)
+            .setColor(EmbedColors.COMMAND)
+            .build();
+    }
+
     public static String formatJoin(MinecraftContext context) {
         return String.format("**%s** joined", context.username);
     }
@@ -44,6 +56,70 @@ public class MessageFormatter {
         return new EmbedBuilder()
             .setAuthor(String.format("%s left the server", context.username), null, "attachment://author.png")
             .setColor(EmbedColors.LEAVE)
+            .build();
+    }
+
+    public static String formatServerStarting(MinecraftContext context) {
+        return "\uD83D\uDD04  Server starting...";
+    }
+
+    public static MessageEmbed embedServerStarting(MinecraftContext context) {
+        return new EmbedBuilder().setTitle(" \uD83D\uDD04  Server starting...")
+            .setColor(EmbedColors.GREY)
+            .build();
+    }
+
+    public static String formatServerStarted(MinecraftContext context) {
+        return "✅  Server started!";
+    }
+
+    public static MessageEmbed embedServerStarted(MinecraftContext context) {
+        return new EmbedBuilder().setTitle(" ✅  Server started!")
+            .setColor(EmbedColors.GREEN)
+            .build();
+    }
+
+    public static String formatServerStopping(MinecraftContext context) {
+        return "\uD83D\uDD04  Server stopping...";
+    }
+
+    public static MessageEmbed embedServerStopping(MinecraftContext context) {
+        return new EmbedBuilder().setTitle(" \uD83D\uDD04  Server stopping...")
+            .setColor(EmbedColors.GREY)
+            .build();
+    }
+
+    public static String formatServerStopped(MinecraftContext context) {
+        return "\uD83D\uDEAB  Server stopped";
+    }
+
+    public static MessageEmbed embedServerStopped(MinecraftContext context) {
+        return new EmbedBuilder().setTitle(" \uD83D\uDEAB  Server stopped")
+            .setColor(EmbedColors.RED)
+            .build();
+    }
+
+    public static String formatPlayerDeath(MinecraftContext context) {
+        return String.format("☠️ %s", context.content);
+    }
+
+    public static MessageEmbed embedPlayerDeath(MinecraftContext context) {
+        return new EmbedBuilder().setAuthor(context.content, null, "attachment://author.png")
+            .setColor(EmbedColors.RED)
+            .build();
+    }
+
+    public static String formatAchievement(MinecraftContext context) {
+        return String.format("**%s** achieved **%s**", context.username, context.content);
+    }
+
+    public static MessageEmbed embedAchievement(MinecraftContext context) {
+        return new EmbedBuilder()
+            .setAuthor(
+                String.format("%s achieved %s", context.username, context.content),
+                null,
+                "attachment://author.png")
+            .setColor(EmbedColors.GOLD)
             .build();
     }
 

@@ -7,6 +7,7 @@ public class MinecraftContext {
     public final String content;
     public final String worldName;
     public final String dimensionId;
+    public final String dimensionName;
 
     private MinecraftContext(Builder builder) {
         this.username = builder.username;
@@ -14,6 +15,7 @@ public class MinecraftContext {
         this.content = builder.content;
         this.worldName = builder.worldName;
         this.dimensionId = builder.dimensionId;
+        this.dimensionName = builder.dimensionName;
     }
 
     public static MinecraftContext forChat(String username, String uuid, String content, String worldName,
@@ -38,6 +40,37 @@ public class MinecraftContext {
             .build();
     }
 
+    public static MinecraftContext forAchievement(String username, String uuid, String content, String worldName,
+        String dimensionId) {
+        return new Builder().username(username)
+            .uuid(uuid)
+            .content(content)
+            .worldName(worldName)
+            .dimensionId(dimensionId)
+            .build();
+    }
+
+    public static MinecraftContext forChatCommand(String username, String uuid, String content) {
+        return new Builder().username(username)
+            .uuid(uuid)
+            .content(content)
+            .build();
+    }
+
+    public static MinecraftContext forDeath(String username, String uuid, String content, String worldName,
+        String dimensionId) {
+        return new Builder().username(username)
+            .uuid(uuid)
+            .content(content)
+            .worldName(worldName)
+            .dimensionId(dimensionId)
+            .build();
+    }
+
+    public static MinecraftContext forEmpty() {
+        return new Builder().build();
+    }
+
     private static class Builder {
 
         private String username;
@@ -45,6 +78,7 @@ public class MinecraftContext {
         private String content;
         private String worldName;
         private String dimensionId;
+        private String dimensionName;
 
         private Builder username(String username) {
             this.username = username;
@@ -68,6 +102,11 @@ public class MinecraftContext {
 
         private Builder dimensionId(String dimensionId) {
             this.dimensionId = dimensionId;
+            return this;
+        }
+
+        private Builder dimensionName(String dimensionName) {
+            this.dimensionName = dimensionName;
             return this;
         }
 
