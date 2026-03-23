@@ -13,9 +13,9 @@ public class ChannelDiscordConfig {
     public final List<String> channelIds;
     public final boolean eventsUseEmbeds;
     public final boolean chatsUseEmbeds;
-    public static final String CHANNEL_IDS = "channelIDs";
-    public static final String EVENTS_USE_EMBEDS = "useEmbedsForEvents";
-    public static final String CHATS_USE_EMBEDS = "useEmbedsForChats";
+    public static final String CHANNEL_IDS_KEY = "channelIDs";
+    public static final String EVENTS_USE_EMBEDS_KEY = "useEmbedsForEvents";
+    public static final String CHATS_USE_EMBEDS_KEY = "useEmbedsForChats";
 
     public ChannelDiscordConfig(List<String> channelIds, boolean eventsUseEmbeds, boolean chatsUseEmbeds) {
         this.channelIds = channelIds;
@@ -25,15 +25,15 @@ public class ChannelDiscordConfig {
 
     public static ChannelDiscordConfig fromJson(JsonObject json) {
         List<String> channelIds = new ArrayList<>();
-        if (json.has(CHANNEL_IDS)) {
-            for (JsonElement el : json.get(CHANNEL_IDS)
+        if (json.has(CHANNEL_IDS_KEY)) {
+            for (JsonElement el : json.get(CHANNEL_IDS_KEY)
                 .getAsJsonArray()) channelIds.add(el.getAsString());
         }
         return new ChannelDiscordConfig(
             channelIds,
-            json.has(EVENTS_USE_EMBEDS) && json.get(EVENTS_USE_EMBEDS)
+            json.has(EVENTS_USE_EMBEDS_KEY) && json.get(EVENTS_USE_EMBEDS_KEY)
                 .getAsBoolean(),
-            json.has(CHATS_USE_EMBEDS) && json.get(CHATS_USE_EMBEDS)
+            json.has(CHATS_USE_EMBEDS_KEY) && json.get(CHATS_USE_EMBEDS_KEY)
                 .getAsBoolean());
     }
 
@@ -44,9 +44,9 @@ public class ChannelDiscordConfig {
 
         for (String id : channelIds) channelIdArray.add(new JsonPrimitive(id));
 
-        json.add(CHANNEL_IDS, channelIdArray);
-        json.addProperty(EVENTS_USE_EMBEDS, eventsUseEmbeds);
-        json.addProperty(CHATS_USE_EMBEDS, chatsUseEmbeds);
+        json.add(CHANNEL_IDS_KEY, channelIdArray);
+        json.addProperty(EVENTS_USE_EMBEDS_KEY, eventsUseEmbeds);
+        json.addProperty(CHATS_USE_EMBEDS_KEY, chatsUseEmbeds);
 
         return json;
     }

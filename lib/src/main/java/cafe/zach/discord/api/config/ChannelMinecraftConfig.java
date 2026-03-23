@@ -11,9 +11,9 @@ import com.google.gson.JsonPrimitive;
 
 public class ChannelMinecraftConfig {
 
-    public static final String WILDCARD = "*";
-
     public final List<String> dimensions;
+    public static final String WILDCARD = "*";
+    public static final String DIMENSIONS_KEY = "dimensions";
 
     public ChannelMinecraftConfig(List<String> dimensions) {
         this.dimensions = Collections.unmodifiableList(dimensions);
@@ -25,8 +25,8 @@ public class ChannelMinecraftConfig {
 
     public static ChannelMinecraftConfig fromJson(JsonObject json) {
         List<String> dimensions = new ArrayList<>();
-        if (json.has("dimensions")) {
-            for (JsonElement el : json.getAsJsonArray("dimensions")) dimensions.add(el.getAsString());
+        if (json.has(DIMENSIONS_KEY)) {
+            for (JsonElement el : json.getAsJsonArray(DIMENSIONS_KEY)) dimensions.add(el.getAsString());
         } else {
             dimensions.add(WILDCARD);
         }
@@ -39,7 +39,7 @@ public class ChannelMinecraftConfig {
 
         JsonArray dims = new JsonArray();
         for (String d : dimensions) dims.add(new JsonPrimitive(d));
-        json.add("dimensions", dims);
+        json.add(DIMENSIONS_KEY, dims);
 
         return json;
     }

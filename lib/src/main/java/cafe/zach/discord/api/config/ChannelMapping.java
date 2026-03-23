@@ -6,27 +6,21 @@ import com.google.gson.JsonObject;
 
 public class ChannelMapping {
 
-    public final String id;
-    public final ChannelDirections directions;
+    public final String displayName;
     public final ChannelDiscordConfig discord;
     public final ChannelMinecraftConfig minecraft;
     public final ChannelFilters filters;
+    public static final String DISPLAY_NAME_KEY = "display_name";
+    public static final String DISCORD_KEY = "discord";
+    public static final String MINECRAFT_KEY = "minecraft";
+    public static final String FILTERS_KEY = "filters";
 
-    public ChannelMapping(String id, ChannelDirections directions, ChannelDiscordConfig discord,
-        ChannelMinecraftConfig minecraft, ChannelFilters filters) {
-        this.id = id;
-        this.directions = directions;
+    public ChannelMapping(String displayName, ChannelDiscordConfig discord, ChannelMinecraftConfig minecraft,
+        ChannelFilters filters) {
+        this.displayName = displayName;
         this.discord = discord;
         this.minecraft = minecraft;
         this.filters = filters;
-    }
-
-    public boolean acceptsFromDiscord() {
-        return directions.discordToMinecraft;
-    }
-
-    public boolean acceptsFromMinecraft() {
-        return directions.minecraftToDiscord;
     }
 
     public boolean matchesDimension(String dimension) {
@@ -35,24 +29,22 @@ public class ChannelMapping {
 
     public static ChannelMapping fromJson(JsonObject json) {
         return new ChannelMapping(
-            json.has("id") ? json.get("id")
+            json.has(DISPLAY_NAME_KEY) ? json.get(DISPLAY_NAME_KEY)
                 .getAsString() : "unnamed",
-            json.has("directions") ? ChannelDirections.fromJson(json.getAsJsonObject("directions"))
-                : new ChannelDirections(true, true),
-            json.has("discord") ? ChannelDiscordConfig.fromJson(json.getAsJsonObject("discord"))
+            json.has(DISCORD_KEY) ? ChannelDiscordConfig.fromJson(json.getAsJsonObject(DISCORD_KEY))
                 : new ChannelDiscordConfig(Collections.emptyList(), true, false),
-            json.has("minecraft") ? ChannelMinecraftConfig.fromJson(json.getAsJsonObject("minecraft"))
-                : new ChannelMinecraftConfig(java.util.Collections.singletonList("*")),
-            json.has("filters") ? ChannelFilters.fromJson(json.getAsJsonObject("filters")) : new ChannelFilters(true));
+            json.has(MINECRAFT_KEY) ? ChannelMinecraftConfig.fromJson(json.getAsJsonObject(MINECRAFT_KEY))
+                : new ChannelMinecraftConfig(java.util.Collections.singletonList(ChannelMinecraftConfig.WILDCARD)),
+            json.has(FILTERS_KEY) ? ChannelFilters.fromJson(json.getAsJsonObject(FILTERS_KEY))
+                : new ChannelFilters(true));
     }
 
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
-        json.addProperty("id", id);
-        json.add("directions", directions.toJson());
-        json.add("discord", discord.toJson());
-        json.add("minecraft", minecraft.toJson());
-        json.add("filters", filters.toJson());
+        json.addProperty(DISPLAY_NAME_KEY, displayName);
+        json.add(DISCORD_KEY, discord.toJson());
+        json.add(MINECRAFT_KEY, minecraft.toJson());
+        json.add(FILTERS_KEY, filters.toJson());
         return json;
     }
 }

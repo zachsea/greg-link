@@ -12,8 +12,7 @@ public class RelayServerStoppingToDiscord {
 
     public static IMinecraftAction create() {
         return context -> {
-            List<ChannelMapping> mappings = ConfigHandler.getInstance()
-                .getRelayChannels();
+            List<ChannelMapping> mappings = ConfigHandler.getInstance().channels;
 
             for (ChannelMapping mapping : mappings) {
                 for (String channelId : mapping.discord.channelIds) {

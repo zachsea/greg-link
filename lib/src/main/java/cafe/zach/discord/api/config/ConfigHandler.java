@@ -18,18 +18,19 @@ public abstract class ConfigHandler {
         .create();
     private static final JsonParser PARSER = new JsonParser();
 
-    // discord
+    // bot
+    public static final String BOT_KEY = "bot";
+    public static final String TOKEN_KEY = "token";
+    // defaults
     public String discordToken = "";
 
-    // server
-    // not yet used
-
     // channels
+    public static final String CHANNELS_KEY = "channels";
+    // defaults
     public List<ChannelMapping> channels = new ArrayList<>(
         Collections.singletonList(
             new ChannelMapping(
                 "Example",
-                new ChannelDirections(false, false),
                 new ChannelDiscordConfig(Collections.singletonList("0000000000000000"), true, false),
                 new ChannelMinecraftConfig(Collections.singletonList("*")),
                 new ChannelFilters(true))));
@@ -63,15 +64,15 @@ public abstract class ConfigHandler {
             if (!element.isJsonObject()) return;
             JsonObject root = element.getAsJsonObject();
 
-            if (root.has("bot")) {
-                JsonObject bot = root.getAsJsonObject("bot");
-                if (bot.has("token")) discordToken = bot.get("token")
+            if (root.has(BOT_KEY)) {
+                JsonObject bot = root.getAsJsonObject(BOT_KEY);
+                if (bot.has(TOKEN_KEY)) discordToken = bot.get(TOKEN_KEY)
                     .getAsString();
             }
 
-            if (root.has("channels")) {
+            if (root.has(CHANNELS_KEY)) {
                 channels = new ArrayList<>();
-                for (JsonElement el : root.getAsJsonArray("channels"))
+                for (JsonElement el : root.getAsJsonArray(CHANNELS_KEY))
                     channels.add(ChannelMapping.fromJson(el.getAsJsonObject()));
             }
 
@@ -93,12 +94,12 @@ public abstract class ConfigHandler {
             JsonObject root = new JsonObject();
 
             JsonObject bot = new JsonObject();
-            bot.addProperty("token", discordToken);
-            root.add("bot", bot);
+            bot.addProperty(TOKEN_KEY, discordToken);
+            root.add(BOT_KEY, bot);
 
             JsonArray channelArray = new JsonArray();
             for (ChannelMapping mapping : channels) channelArray.add(mapping.toJson());
-            root.add("channels", channelArray);
+            root.add(CHANNELS_KEY, channelArray);
 
             onSave(root);
 
@@ -111,20 +112,8 @@ public abstract class ConfigHandler {
         }
     }
 
-    public List<ChannelMapping> getListenChannels() {
-        return channels.stream()
-            .filter(ChannelMapping::acceptsFromDiscord)
-            .collect(Collectors.toList());
-    }
-
-    public List<ChannelMapping> getRelayChannels() {
-        return channels.stream()
-            .filter(ChannelMapping::acceptsFromMinecraft)
-            .collect(Collectors.toList());
-    }
-
     public List<ChannelMapping> getChannelsForDimension(String dimension) {
-        return getRelayChannels().stream()
+        return channels.stream()
             .filter(m -> m.matchesDimension(dimension))
             .collect(Collectors.toList());
     }

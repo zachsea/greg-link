@@ -11,8 +11,7 @@ public class BroadcastMessageToChat {
 
     public static IDiscordAction create(ChatSender sender) {
         return context -> {
-            for (ChannelMapping mapping : ConfigHandler.getInstance()
-                .getListenChannels()) {
+            for (ChannelMapping mapping : ConfigHandler.getInstance().channels) {
                 if (!mapping.discord.channelIds.contains(context.channelId)) continue;
 
                 ChannelFilters filters = mapping.filters;
