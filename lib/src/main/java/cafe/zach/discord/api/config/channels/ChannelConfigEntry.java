@@ -1,10 +1,11 @@
-package cafe.zach.discord.api.config;
+package cafe.zach.discord.api.config.channels;
 
 import java.util.Collections;
 
+import cafe.zach.discord.api.config.ChannelFilters;
 import com.google.gson.JsonObject;
 
-public class ChannelMapping {
+public class ChannelConfigEntry {
 
     public final String displayName;
     public final ChannelDiscordConfig discord;
@@ -15,8 +16,8 @@ public class ChannelMapping {
     public static final String MINECRAFT_KEY = "minecraft";
     public static final String FILTERS_KEY = "filters";
 
-    public ChannelMapping(String displayName, ChannelDiscordConfig discord, ChannelMinecraftConfig minecraft,
-        ChannelFilters filters) {
+    public ChannelConfigEntry(String displayName, ChannelDiscordConfig discord, ChannelMinecraftConfig minecraft,
+                              ChannelFilters filters) {
         this.displayName = displayName;
         this.discord = discord;
         this.minecraft = minecraft;
@@ -27,8 +28,8 @@ public class ChannelMapping {
         return minecraft.matchesDimension(dimension);
     }
 
-    public static ChannelMapping fromJson(JsonObject json) {
-        return new ChannelMapping(
+    public static ChannelConfigEntry fromJson(JsonObject json) {
+        return new ChannelConfigEntry(
             json.has(DISPLAY_NAME_KEY) ? json.get(DISPLAY_NAME_KEY)
                 .getAsString() : "unnamed",
             json.has(DISCORD_KEY) ? ChannelDiscordConfig.fromJson(json.getAsJsonObject(DISCORD_KEY))

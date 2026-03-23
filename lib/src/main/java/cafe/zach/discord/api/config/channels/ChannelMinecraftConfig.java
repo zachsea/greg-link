@@ -1,4 +1,4 @@
-package cafe.zach.discord.api.config;
+package cafe.zach.discord.api.config.channels;
 
 import java.util.ArrayList;
 import java.util.Collections;

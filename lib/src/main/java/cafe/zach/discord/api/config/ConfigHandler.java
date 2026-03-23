@@ -11,6 +11,11 @@ import java.util.stream.Collectors;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 
+import cafe.zach.discord.api.config.bot.BotConfigEntry;
+import cafe.zach.discord.api.config.channels.ChannelConfigEntry;
+import cafe.zach.discord.api.config.channels.ChannelDiscordConfig;
+import cafe.zach.discord.api.config.channels.ChannelMinecraftConfig;
+
 public abstract class ConfigHandler {
 
     private static ConfigHandler INSTANCE;
@@ -20,16 +25,15 @@ public abstract class ConfigHandler {
 
     // bot
     public static final String BOT_KEY = "bot";
-    public static final String TOKEN_KEY = "token";
     // defaults
-    public String discordToken = "";
+    public BotConfigEntry bot = new BotConfigEntry("");
 
     // channels
     public static final String CHANNELS_KEY = "channels";
     // defaults
-    public List<ChannelMapping> channels = new ArrayList<>(
+    public List<ChannelConfigEntry> channels = new ArrayList<>(
         Collections.singletonList(
-            new ChannelMapping(
+            new ChannelConfigEntry(
                 "Example",
                 new ChannelDiscordConfig(Collections.singletonList("0000000000000000"), true, false),
                 new ChannelMinecraftConfig(Collections.singletonList("*")),
@@ -65,15 +69,13 @@ public abstract class ConfigHandler {
             JsonObject root = element.getAsJsonObject();
 
             if (root.has(BOT_KEY)) {
-                JsonObject bot = root.getAsJsonObject(BOT_KEY);
-                if (bot.has(TOKEN_KEY)) discordToken = bot.get(TOKEN_KEY)
-                    .getAsString();
+                bot = BotConfigEntry.fromJson(root.getAsJsonObject(BOT_KEY));
             }
 
             if (root.has(CHANNELS_KEY)) {
                 channels = new ArrayList<>();
                 for (JsonElement el : root.getAsJsonArray(CHANNELS_KEY))
-                    channels.add(ChannelMapping.fromJson(el.getAsJsonObject()));
+                    channels.add(ChannelConfigEntry.fromJson(el.getAsJsonObject()));
             }
 
             onLoad(root);
@@ -93,12 +95,10 @@ public abstract class ConfigHandler {
 
             JsonObject root = new JsonObject();
 
-            JsonObject bot = new JsonObject();
-            bot.addProperty(TOKEN_KEY, discordToken);
-            root.add(BOT_KEY, bot);
+            root.add(BOT_KEY, bot.toJson());
 
             JsonArray channelArray = new JsonArray();
-            for (ChannelMapping mapping : channels) channelArray.add(mapping.toJson());
+            for (ChannelConfigEntry mapping : channels) channelArray.add(mapping.toJson());
             root.add(CHANNELS_KEY, channelArray);
 
             onSave(root);
@@ -112,9 +112,13 @@ public abstract class ConfigHandler {
         }
     }
 
-    public List<ChannelMapping> getChannelsForDimension(String dimension) {
+    public List<ChannelConfigEntry> getChannelsForDimension(String dimension) {
         return channels.stream()
             .filter(m -> m.matchesDimension(dimension))
             .collect(Collectors.toList());
+    }
+
+    public String getDiscordToken() {
+        return bot.botToken;
     }
 }

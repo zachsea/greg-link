@@ -44,7 +44,7 @@ class DiscordService {
 
             api = JDABuilder
                 .createLight(
-                    config.discordToken,
+                    config.getDiscordToken(),
                     GatewayIntent.GUILD_MESSAGES,
                     GatewayIntent.MESSAGE_CONTENT,
                     GatewayIntent.GUILD_MEMBERS,
