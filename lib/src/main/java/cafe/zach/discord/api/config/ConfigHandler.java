@@ -13,8 +13,10 @@ import com.google.gson.stream.JsonReader;
 
 import cafe.zach.discord.api.config.bot.BotConfigEntry;
 import cafe.zach.discord.api.config.channels.ChannelConfigEntry;
-import cafe.zach.discord.api.config.channels.ChannelDiscordConfig;
-import cafe.zach.discord.api.config.channels.ChannelMinecraftConfig;
+import cafe.zach.discord.api.config.channels.discord.DiscordConfigEntry;
+import cafe.zach.discord.api.config.channels.discord.filters.DiscordConfigFiltersEntry;
+import cafe.zach.discord.api.config.channels.minecraft.MinecraftConfigEntry;
+import cafe.zach.discord.api.config.channels.minecraft.filters.MinecraftConfigFiltersEntry;
 
 public abstract class ConfigHandler {
 
@@ -35,9 +37,14 @@ public abstract class ConfigHandler {
         Collections.singletonList(
             new ChannelConfigEntry(
                 "Example",
-                new ChannelDiscordConfig(Collections.singletonList("0000000000000000"), true, false),
-                new ChannelMinecraftConfig(Collections.singletonList("*")),
-                new ChannelFilters(true))));
+                new DiscordConfigEntry(
+                    Collections.singletonList("0000000000000000"),
+                    true,
+                    false,
+                    new DiscordConfigFiltersEntry(false)),
+                new MinecraftConfigEntry(
+                    new MinecraftConfigFiltersEntry(
+                        Collections.singletonList(MinecraftConfigFiltersEntry.WILDCARD))))));
 
     public static void setInstance(ConfigHandler instance) {
         INSTANCE = instance;

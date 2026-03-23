@@ -5,16 +5,16 @@ import java.util.List;
 import cafe.zach.discord.DiscordBridge;
 import cafe.zach.discord.api.action.IMinecraftAction;
 import cafe.zach.discord.api.action.format.MessageFormatter;
-import cafe.zach.discord.api.config.channels.ChannelConfigEntry;
-import cafe.zach.discord.api.config.channels.ChannelMinecraftConfig;
 import cafe.zach.discord.api.config.ConfigHandler;
+import cafe.zach.discord.api.config.channels.ChannelConfigEntry;
+import cafe.zach.discord.api.config.channels.minecraft.filters.MinecraftConfigFiltersEntry;
 
 public class RelayJoinToDiscord {
 
     public static IMinecraftAction create() {
         return context -> {
             List<ChannelConfigEntry> mappings = ConfigHandler.getInstance()
-                .getChannelsForDimension(ChannelMinecraftConfig.WILDCARD);
+                .getChannelsForDimension(MinecraftConfigFiltersEntry.WILDCARD);
 
             for (ChannelConfigEntry mapping : mappings) {
                 for (String channelId : mapping.discord.channelIds) {
