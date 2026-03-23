@@ -13,7 +13,7 @@ public class BroadcastMessageToChat {
         return context -> {
             for (ChannelMapping mapping : ConfigHandler.getInstance()
                 .getListenChannels()) {
-                if (!mapping.discordChannelId.equals(context.channelId)) continue;
+                if (!mapping.discord.channelIds.contains(context.channelId)) continue;
 
                 ChannelFilters filters = mapping.filters;
                 if (filters.ignoreBots && context.isBot) continue;

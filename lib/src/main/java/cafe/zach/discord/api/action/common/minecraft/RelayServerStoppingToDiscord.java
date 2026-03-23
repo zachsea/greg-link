@@ -16,10 +16,12 @@ public class RelayServerStoppingToDiscord {
                 .getRelayChannels();
 
             for (ChannelMapping mapping : mappings) {
-                if (mapping.discord.eventsUseEmbeds) {
-                    DiscordBridge.sendEmbed(mapping.discordChannelId, MessageFormatter.embedServerStopping(context));
-                } else {
-                    DiscordBridge.sendMessage(mapping.discordChannelId, MessageFormatter.formatServerStopping(context));
+                for (String channelId : mapping.discord.channelIds) {
+                    if (mapping.discord.eventsUseEmbeds) {
+                        DiscordBridge.sendEmbed(channelId, MessageFormatter.embedServerStopping(context));
+                    } else {
+                        DiscordBridge.sendMessage(channelId, MessageFormatter.formatServerStopping(context));
+                    }
                 }
             }
         };

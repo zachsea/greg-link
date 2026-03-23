@@ -17,13 +17,15 @@ public class RelayCommandToDiscord {
                 .getChannelsForDimension(ChannelMinecraftConfig.WILDCARD);
 
             for (ChannelMapping mapping : mappings) {
-                if (mapping.discord.chatsUseEmbeds) {
-                    DiscordBridge.sendEmbedWithAvatar(
-                        mapping.discordChannelId,
-                        MessageFormatter.embedChatCommand(context),
-                        MessageFormatter.fetchAvatar(context));
-                } else {
-                    DiscordBridge.sendMessage(mapping.discordChannelId, MessageFormatter.formatChatCommand(context));
+                for (String channelId : mapping.discord.channelIds) {
+                    if (mapping.discord.chatsUseEmbeds) {
+                        DiscordBridge.sendEmbedWithAvatar(
+                            channelId,
+                            MessageFormatter.embedChatCommand(context),
+                            MessageFormatter.fetchAvatar(context));
+                    } else {
+                        DiscordBridge.sendMessage(channelId, MessageFormatter.formatChatCommand(context));
+                    }
                 }
             }
         };

@@ -16,13 +16,15 @@ public class RelayAchievementToDiscord {
                 .getChannelsForDimension(context.dimensionId);
 
             for (ChannelMapping mapping : mappings) {
-                if (mapping.discord.eventsUseEmbeds) {
-                    DiscordBridge.sendEmbedWithAvatar(
-                        mapping.discordChannelId,
-                        MessageFormatter.embedAchievement(context),
-                        MessageFormatter.fetchAvatar(context));
-                } else {
-                    DiscordBridge.sendMessage(mapping.discordChannelId, MessageFormatter.formatAchievement(context));
+                for (String channelId : mapping.discord.channelIds) {
+                    if (mapping.discord.chatsUseEmbeds) {
+                        DiscordBridge.sendEmbedWithAvatar(
+                            channelId,
+                            MessageFormatter.embedAchievement(context),
+                            MessageFormatter.fetchAvatar(context));
+                    } else {
+                        DiscordBridge.sendMessage(channelId, MessageFormatter.formatAchievement(context));
+                    }
                 }
             }
         };

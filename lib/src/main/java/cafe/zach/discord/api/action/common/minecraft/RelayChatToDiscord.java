@@ -16,13 +16,15 @@ public class RelayChatToDiscord {
                 .getChannelsForDimension(context.dimensionId);
 
             for (ChannelMapping mapping : mappings) {
-                if (mapping.discord.chatsUseEmbeds) {
-                    DiscordBridge.sendEmbedWithAvatar(
-                        mapping.discordChannelId,
-                        MessageFormatter.embedChat(context),
-                        MessageFormatter.fetchAvatar(context));
-                } else {
-                    DiscordBridge.sendMessage(mapping.discordChannelId, MessageFormatter.formatChat(context));
+                for (String channelId : mapping.discord.channelIds) {
+                    if (mapping.discord.chatsUseEmbeds) {
+                        DiscordBridge.sendEmbedWithAvatar(
+                            channelId,
+                            MessageFormatter.embedChat(context),
+                            MessageFormatter.fetchAvatar(context));
+                    } else {
+                        DiscordBridge.sendMessage(channelId, MessageFormatter.formatChat(context));
+                    }
                 }
             }
         };

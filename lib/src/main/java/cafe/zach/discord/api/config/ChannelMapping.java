@@ -1,20 +1,20 @@
 package cafe.zach.discord.api.config;
 
+import java.util.Collections;
+
 import com.google.gson.JsonObject;
 
 public class ChannelMapping {
 
     public final String id;
-    public final String discordChannelId;
     public final ChannelDirections directions;
     public final ChannelDiscordConfig discord;
     public final ChannelMinecraftConfig minecraft;
     public final ChannelFilters filters;
 
-    public ChannelMapping(String id, String discordChannelId, ChannelDirections directions,
-        ChannelDiscordConfig discord, ChannelMinecraftConfig minecraft, ChannelFilters filters) {
+    public ChannelMapping(String id, ChannelDirections directions, ChannelDiscordConfig discord,
+        ChannelMinecraftConfig minecraft, ChannelFilters filters) {
         this.id = id;
-        this.discordChannelId = discordChannelId;
         this.directions = directions;
         this.discord = discord;
         this.minecraft = minecraft;
@@ -37,12 +37,10 @@ public class ChannelMapping {
         return new ChannelMapping(
             json.has("id") ? json.get("id")
                 .getAsString() : "unnamed",
-            json.has("discordChannelId") ? json.get("discordChannelId")
-                .getAsString() : "",
             json.has("directions") ? ChannelDirections.fromJson(json.getAsJsonObject("directions"))
                 : new ChannelDirections(true, true),
             json.has("discord") ? ChannelDiscordConfig.fromJson(json.getAsJsonObject("discord"))
-                : new ChannelDiscordConfig(true, false),
+                : new ChannelDiscordConfig(Collections.emptyList(), true, false),
             json.has("minecraft") ? ChannelMinecraftConfig.fromJson(json.getAsJsonObject("minecraft"))
                 : new ChannelMinecraftConfig(java.util.Collections.singletonList("*")),
             json.has("filters") ? ChannelFilters.fromJson(json.getAsJsonObject("filters")) : new ChannelFilters(true));
@@ -51,7 +49,6 @@ public class ChannelMapping {
     public JsonObject toJson() {
         JsonObject json = new JsonObject();
         json.addProperty("id", id);
-        json.addProperty("discordChannelId", discordChannelId);
         json.add("directions", directions.toJson());
         json.add("discord", discord.toJson());
         json.add("minecraft", minecraft.toJson());

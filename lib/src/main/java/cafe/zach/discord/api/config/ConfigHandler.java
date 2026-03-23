@@ -29,9 +29,8 @@ public abstract class ConfigHandler {
         Collections.singletonList(
             new ChannelMapping(
                 "Example",
-                "0000000000000000",
                 new ChannelDirections(false, false),
-                new ChannelDiscordConfig(true, false),
+                new ChannelDiscordConfig(Collections.singletonList("0000000000000000"), true, false),
                 new ChannelMinecraftConfig(Collections.singletonList("*")),
                 new ChannelFilters(true))));
 
